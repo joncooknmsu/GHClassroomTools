@@ -1,0 +1,2 @@
+for d in cs*; do echo $d; cd $d; git add assignment0/grade.txt; git commit -m 'assignment0 graded'; git push; cd ..; done
+
