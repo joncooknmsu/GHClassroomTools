@@ -4,31 +4,37 @@ import os
 import argparse
 
 doGit = True
-doSvn = True
-dryRun = True
+doSvn = False
+dryRun = False
 debug = False
-maxDepth = 3
+maxDepth = 4
 
 def processDir(cwd,depth):
-   if depth >= maxDepth: 
-      return False
+   global debug, doGit, doSvn, dryRun, maxDepth
+   # first create an indent prefix for pretty-printing
    indent = ""
    for i in range(depth):
       indent = indent+"   "
-   print("{1}dir ({0})".format(cwd,indent),end="")
+   if depth >= maxDepth: 
+      if debug: print("{0}reached max depth of {1}".format(indent,depth))
+      return False
+   print("{0}dir ({1}) ".format(indent,cwd),end="")
    if os.path.exists(cwd):
       os.chdir(cwd)
    else:
       return False
-   if debug: print("{0}entered".format(indent))
+   # after here we have entered a subdir, so any return must cd ..
+   if debug: print("{0}entered ".format(indent),end="")
    if os.path.exists(".svn"):
-      print("is an SVN repo, let's update")
+      if doSvn: print("is an SVN repo, let's update")
+      else: print("")
       if (not dryRun and doSvn):
          os.system("svn update")
       os.chdir("..")
       return True
    if os.path.exists(".git"):
-      print("{0}is a Git repo, let's pull".format(indent))
+      if doGit: print("{0}is a Git repo, let's pull".format(indent))
+      else: print("")
       if (not dryRun and doGit):
          os.system("git pull -a")
       os.chdir("..")
@@ -47,13 +53,22 @@ def processDir(cwd,depth):
 # Main
 #
 argParser = argparse.ArgumentParser(description='Git repo management')
-argParser.add_argument('--dry', help='perform dry run, no operations')
-argParser.add_argument('--svn', help='turn on svn update for svn repo')
+argParser.add_argument('--dry', action='store_true', help='perform dry run, no operations (default real-actions)')
+argParser.add_argument('--svn', action='store_true', help='turn on svn update for any svn repos (default off)')
+argParser.add_argument('--nogit', action='store_false', help='turn OFF git pull for any git repos (default on)')
+argParser.add_argument('--debug', action='store_true', help='turn on debugging info (default off)')
+argParser.add_argument('--depth', action='store', type=int, default=4, help='maximum directory traversal depth (default 4)')
 args = argParser.parse_args()
-print(args)
-
+dryRun = args.dry
+doSvn = args.svn
+doGit = args.nogit
+debug = args.debug
+maxDepth = args.depth
+if debug:
+   print(args)
 if dryRun:
    print("No action, just dry run")
+   
 processDir(os.path.abspath("."),0)
 exit()
-
+ls
