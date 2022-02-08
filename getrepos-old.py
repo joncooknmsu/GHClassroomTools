@@ -1,4 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/python2
+#
+# Original getrepos, simple, no options, hardcoded for me
+#
 
 import os
 import sys
