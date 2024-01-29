@@ -1,2 +1,11 @@
+
+# After grading and creating a grade.txt file, loop through all
+# repos and add, commit, and push the grade file
 for d in cs*; do echo $d; cd $d; git add assignment0/grade.txt; git commit -m 'assignment0 graded'; git push; cd ..; done
+
+# Loop through repos and create user statistics
+# - assumes a corresponding wiki repo exists
+# - repos.txt is a text file with one repo name (dir name) per line
+for d in `cat repos.txt`; do echo $d; cd $d; echo "======== REPO stats ========" > userstats.txt; ../userstats.py >> userstats.txt; echo "======== WIKI stats =========" >> userstats.txt; cd ..; cd $d.wiki; ../userstats.py >> ../$d/userstats.txt ; cd ..; done
+
 
