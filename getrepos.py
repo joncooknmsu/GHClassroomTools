@@ -89,6 +89,7 @@ while (i < len(sys.argv)):
    v = re.match("--assign=(.*)",sys.argv[i])
    if v is not None:
       assignment = v.group(1)
+   i += 1
    
 #print sys.argv[0], sys.argv[1]
 processRepoCSVFile(sys.argv[1])
